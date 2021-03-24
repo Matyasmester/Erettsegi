@@ -1,0 +1,7 @@
+C:\Cs Projects\Érettségi\Érettségi\bin\Debug\Érettségi.exe.config
+C:\Cs Projects\Érettségi\Érettségi\bin\Debug\Érettségi.exe
+C:\Cs Projects\Érettségi\Érettségi\bin\Debug\Érettségi.pdb
+C:\Cs Projects\Érettségi\Érettségi\obj\Debug\Érettségi.csprojAssemblyReference.cache
+C:\Cs Projects\Érettségi\Érettségi\obj\Debug\Érettségi.csproj.CoreCompileInputs.cache
+C:\Cs Projects\Érettségi\Érettségi\obj\Debug\Érettségi.exe
+C:\Cs Projects\Érettségi\Érettségi\obj\Debug\Érettségi.pdb
