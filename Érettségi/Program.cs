@@ -8,146 +8,137 @@ namespace Erettsegi
 {
     class Program
     {
-        static void Main(string[] args)
+        /*
+         * Feladatlap: https://dload-oktatas.educatio.hu/erettsegi/feladatok_2020osz_emelt/e_inf_20okt_fl.pdf
+         * Forras: https://www.oktatas.hu/kozneveles/erettsegi/feladatsorok/emelt_szint_2020osz/emelt_8nap
+         */
+
+        static void Main()
         {
-            /*
-             * Feladatlap: https://dload-oktatas.educatio.hu/erettsegi/feladatok_2016tavasz_emelt/e_inf_16maj_fl.pdf 
-             * Forras: https://www.oktatas.hu/kozneveles/erettsegi/feladatsorok/emelt_szint_2016tavasz/emelt_7nap
-             */
+            List<string> lines = File.ReadAllLines(@"C:\Cs Projects\Érettségi\srces\4_Sorozatok\lista.txt").ToList();
 
-            List<string> lines = File.ReadAllLines(@"C:\Cs Projects\Érettségi\srces\4_Otszaz\penztar.txt").ToList(); 
+            int nKnownReleaseDates = 0;
 
-            int len = lines.Count;
+            float seen = lines.Count(x => x.Equals("1"));
+            float max = seen + lines.Count(x => x.Equals("0"));
 
-            int nPayments = 0;
+            int totalMins = 0;
+            int nDays = 0;
+            int nHours = 0;
+            int nMins = 0;
 
-            int firstPayment = 0;
-
-            List<List<string>> payments = new List<List<string>>();
-
-            int temp = 0;
-
-            for(int i = 0; i < len; i++)
+            foreach (string line in lines)
             {
-                if (lines[i].Equals("F"))
+                int currI = lines.IndexOf(line);
+                string next = lines[currI + 1];
+                if (currI % 5 == 0 && !line.Equals("NI"))
                 {
-                    if (nPayments == 0) firstPayment = i;
-                    nPayments++;
+                    nKnownReleaseDates++;
+                }
+                if (next.Equals("1") || next.Equals("0"))
+                {
+                    totalMins += Convert.ToInt32(line);
+                }
+            }
 
-                    List<string> payment = new List<string>();
+            nDays = totalMins / 1440;
+            totalMins -= nDays * 1440;
 
-                    for (int j = temp; j < i; j++)
+            nHours = totalMins / 60;
+            totalMins -= nHours * 60;
+
+            nMins = totalMins;
+
+            float percentSeen = (seen / max) * 100;
+
+            Console.WriteLine($"2. Feladat | Ennyi sorozatnak tudjuk kiadasi datumat: {nKnownReleaseDates}");
+            Console.WriteLine($"3. Feladat | Ennyi szazalekat latta a sorozatoknak: {Math.Truncate(percentSeen * 100) / 100}%");
+            Console.WriteLine($"4. Feladat | Sorozatnezessel ennyi idot toltott el: {nDays} nap {nHours} óra {nMins} perc.");
+
+            Console.WriteLine("5. Feladat | Egy datum eeee.hh.nn formatumban:");
+            string date = Console.ReadLine();
+
+            HashSet<string> pairs = new HashSet<string>();
+
+            int year = Convert.ToInt32(date.Substring(0, 4));
+
+            int month = Convert.ToInt32(date.Substring(5, 2));
+
+            int day = Convert.ToInt32(date.Substring(8, 2));
+
+            foreach (string line in lines)
+            {
+                int currI = lines.IndexOf(line);
+                if (currI % 5 == 0 && !line.Equals("NI"))
+                {
+                    int currYear = Convert.ToInt32(line.Substring(0, 4));
+
+                    int currMonth = Convert.ToInt32(line.Substring(5, 2));
+
+                    int currDay = Convert.ToInt32(line.Substring(8, 2));
+
+                    if (year >= currYear && day >= currDay && month >= currMonth)
                     {
-                        payment.Add(lines[j]);
+                        string str = lines[currI + 2] + "   " + lines[currI + 1];
+                        pairs.Add(str);
                     }
-                    temp = i;
-
-                    payments.Add(payment);
                 }
             }
 
-            int nItemsInFirstCart = firstPayment;
-
-            Console.WriteLine($"2. feladat | Összesen ennyiszer fizettek a pénztárnál: {nPayments}");
-
-            Console.WriteLine($"3. feladat | Az első vásárló kosarában levő árucikkek száma: {nItemsInFirstCart}");
-
-            Console.WriteLine($"4. feladat | Egy vásárlás sorszáma: ");
-
-            int serialNum = Convert.ToInt32(Console.ReadLine()) - 1;
-
-            Console.WriteLine($"4. feladat | Egy árucikk: ");
-
-            string item = Console.ReadLine();
-
-            Console.WriteLine($"4. feladat | Egy darabszám: ");
-
-            int num = Convert.ToInt32(Console.ReadLine());
-
-            int firstPurchaseOf = -1;
-
-            int lastPurchaseOf = 0;
-
-            foreach (List<string> payment in payments)
+            foreach (string str in pairs)
             {
-                if (payment.Contains(item) && firstPurchaseOf == -1)
+                Console.WriteLine(str);
+            }
+
+            Console.WriteLine("7. Feladat | Adjon meg egy napot roviditett alakban (h, k, sze, cs, p, szo, v): ");
+
+            string inputDay = Console.ReadLine();
+
+            HashSet<string> names = new HashSet<string>();
+
+            bool showAiredOnDay = false;
+
+            foreach (string line in lines)
+            {
+                int currI = lines.IndexOf(line);
+                if (currI % 5 == 0 && !line.Equals("NI"))
                 {
-                    firstPurchaseOf = payments.IndexOf(payment);
+                    int currYear = Convert.ToInt32(line.Substring(0, 4));
+
+                    int currMonth = Convert.ToInt32(line.Substring(5, 2));
+
+                    int currDay = Convert.ToInt32(line.Substring(8, 2));
+
+                    if(hetnapja(currYear, currMonth, currDay) == inputDay)
+                    {
+                        names.Add(lines[currI + 1]);
+                        showAiredOnDay = true;
+                    }
                 }
-                else if(payment.Contains(item)) lastPurchaseOf = payments.IndexOf(payment); 
             }
 
-            int nPurchasesOfItem = lines.Count(x => x.Equals(item));
-
-            Console.WriteLine($"5. a) feladat | Első vásárlás sorszáma: {firstPurchaseOf + 1}");
-
-            Console.WriteLine($"5. a) feladat | Utolsó vásárlás sorszáma: {lastPurchaseOf + 1}");
-
-            Console.WriteLine($"5. b) feladat | Ennyiszer vásárolták: {nPurchasesOfItem}");
-
-            Console.WriteLine($"6. b) feladat | {num} darab esetén fizetendő: {ertek(num)}");
-
-            Console.WriteLine($"7. feladat ");
-
-            payments[serialNum].RemoveAll(x => x.Equals("F"));
-
-            foreach (string boughtItem in payments[serialNum])
-            {
-                List<string> current = payments[serialNum];
-                int nItems = current.Count(x => x.Equals(boughtItem));
-
-                Console.WriteLine($"{nItems} {boughtItem}");
-            }
-
-            string path = @"C:\Cs Projects\Érettségi\srces\4_Otszaz\osszeg.txt";
-
-            foreach (List<string> payment in payments)
-            {
-                int total = 0;
-                string toWrite = (payments.IndexOf(payment) + 1).ToString() + ":";
-
-                foreach (string bought in payment)
-                { 
-                    int nItems = payment.Count(x => x.Equals(bought));
-
-                    total += ertek(nItems);
+            if (showAiredOnDay) {
+                foreach (string str in names)
+                {
+                    Console.WriteLine(str);
                 }
-
-                toWrite += total.ToString() + "\n";
-                File.AppendAllText(path, toWrite);
-            }
-
-            Console.Read();
-        }
-
-        private static int ertek(int db)
-        {
-            int basePrice = 500;
-
-            int downgrade = 50;
-
-            int totalprice = 0;
-
-            if (db > 3)
-            {
-                totalprice += basePrice + (basePrice - downgrade) + (basePrice - 2 * downgrade);
-                basePrice -= 2 * downgrade;
-                totalprice += (db - 3) * basePrice;
-            }
-            else if (db == 3)
-            {
-                totalprice += basePrice + (basePrice - downgrade) + (basePrice - 2 * downgrade);
-            }
-            else if (db == 2)
-            {
-                totalprice += basePrice + (basePrice - downgrade);
             }
             else
             {
-                totalprice += basePrice;
+                Console.WriteLine("Az adott napon nem kerül adasba sorozat.");
             }
 
-            return totalprice;
+            string hetnapja(int ev, int ho, int nap)
+            {
+                string[] napok = { "v", "h", "k", "sze", "cs", "p", "szo" };
+                int[] honapok = { 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
+
+                if (ho < 3) ev -= 1;
+
+                return napok[(ev + ev / 4 - ev / 100 + ev / 400 + honapok[ho - 1] + nap) % 7];
+            }
+
+            Console.Read();
         }
     }
 }
